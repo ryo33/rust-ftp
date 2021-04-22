@@ -364,7 +364,8 @@ impl FtpStream {
     fn pasv(&mut self) -> crate::Result<SocketAddr> {
         self.write_str("PASV\r\n")?;
         // PASV response format : 227 Entering Passive Mode (h1,h2,h3,h4,p1,p2).
-        let Line(_, line) = self.read_response(status::PASSIVE_MODE)?;
+        let Line(_, line) =
+            self.read_response_in(&[status::PASSIVE_MODE, status::CLOSING_DATA_CONNECTION])?;
         PORT_RE
             .captures(&line)
             .ok_or(FtpError::InvalidResponse(format!(
